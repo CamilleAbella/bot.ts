@@ -5,6 +5,26 @@ import regexParser from "regex-parser"
 import * as core from "./core"
 import * as command from "./command"
 
+export interface CastValues<Message extends command.CommandMessage, Returns> {
+  (value: string, message: Message): Returns
+  number: number
+  date: Date
+  json: object
+  boolean: boolean
+  regex: RegExp
+  array: string[]
+  user: discord.User
+  member: discord.GuildMember
+  channel: discord.Channel
+  message: discord.Message
+  role: discord.Role
+  emote: discord.GuildEmoji
+  invite: discord.Invite
+}
+
+export type CastKey<Message extends command.CommandMessage, Returns> = keyof CastValues<Message, Returns>
+export type CastValue<Message extends command.CommandMessage, Returns, Key extends CastKey<Message, Returns>> = CastValues<Message, Returns>[Key]
+
 export interface Argument {
   name: string
   description: string
@@ -16,26 +36,12 @@ export interface Rest<Message extends command.CommandMessage> extends Argument {
   all?: boolean
 }
 
-export interface Option<Message extends command.CommandMessage>
+export interface Option<Message extends command.CommandMessage, Returns, CK extends CastKey<Message, Returns>>
   extends Argument {
   aliases?: string[] | string
   default?: core.Scrap<string, [message?: Message]>
   required?: core.Scrap<boolean, [message?: Message]>
-  castValue?:
-    | "number"
-    | "date"
-    | "json"
-    | "boolean"
-    | "regex"
-    | "array"
-    | "user"
-    | "member"
-    | "channel"
-    | "message"
-    | "role"
-    | "emote"
-    | "invite"
-    | ((value: string, message: Message) => any)
+  castValue?: CK
   /**
    * If returns string, it used as error message
    */
