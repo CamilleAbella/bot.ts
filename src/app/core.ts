@@ -11,6 +11,7 @@ import EventEmitter from "events"
 import * as prettier from "prettier"
 
 import * as logger from "./logger"
+import { CommandMessage } from "./command"
 
 export const startedAt = Date.now()
 
@@ -24,6 +25,30 @@ export type FullClient = discord.Client & {
 
 export function isFullClient(client: discord.Client): client is FullClient {
   return client.user?.id !== undefined
+}
+
+export type EmbedType = "success" | "error" | "info"
+
+export const config: Config = {
+  embedTemplates: {
+    info: (message, title) => new discord.MessageEmbed()
+      .setColor("BLURPLE")
+      .setAuthor(title ?? "Information", message?.client.user.displayAvatarURL()),
+    error: (message, title) => new discord.MessageEmbed()
+      .setColor("RED")
+      .setAuthor(title ?? "Error", message?.client.user.displayAvatarURL()),
+    success: (message, title) => new discord.MessageEmbed()
+      .setColor("GREEN")
+      .setAuthor(title ?? "Success", message?.client.user.displayAvatarURL())
+  }
+}
+
+export interface Config {
+  embedTemplates: { [k in EmbedType]: (message?: CommandMessage, authorName?: string) => discord.MessageEmbed }
+}
+
+export function createEmbed(): discord.MessageEmbed {
+  return
 }
 
 /**
