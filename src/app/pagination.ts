@@ -150,13 +150,15 @@ export class Paginator extends events.EventEmitter {
   }
 
   private async getCurrentPage() {
+    let page: Page
+
     if (Array.isArray(this.options.pages)) {
-      return this.options.pages[this.pageIndex]
+      page = this.options.pages[this.pageIndex]
+    } else {
+      page = await this.options.pages(this.pageIndex, this.options.data)
     }
 
-    const page = await this.options.pages(this.pageIndex, this.options.data)
-
-    return page || this.options.placeHolder || "Oops, no data found"
+    return page || this.options.placeHolder || "No data found"
   }
 
   public async deactivate() {
@@ -175,6 +177,10 @@ export class Paginator extends events.EventEmitter {
       return paginator.messageID !== this.messageID
     })
   }
+
+  public toString(): string {}
+
+  public static fromString(string: string): Paginator {}
 
   public static getByMessage(
     message: discord.Message | discord.PartialMessage

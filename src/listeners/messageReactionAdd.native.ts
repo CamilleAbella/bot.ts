@@ -7,7 +7,7 @@ const listener: app.Listener<"messageReactionAdd"> = {
       const message = reaction.message
       const guild = message.guild
       if (guild) {
-        const paginator = app.Paginator.getByMessage(message)
+        const paginator = await app.Paginator.fetchByMessage(message)
         if (paginator) {
           paginator.handleReaction(reaction, user)
         }
